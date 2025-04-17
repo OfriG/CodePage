@@ -4,4 +4,3 @@ client/build
 
 # Env
 server/.env
-node_modules
