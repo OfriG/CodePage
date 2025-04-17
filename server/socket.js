@@ -7,13 +7,15 @@ module.exports = function(io) {
   io.on("connection", (socket) => {
     console.log("User connected:", socket.id);
 
+    // A user wants to join a specific room
     socket.on("joinRoom", ({ blockId }) => {
       console.log("joinRoom received with blockId:", blockId);
 
+      // Create a new room and initial code if it doesn't exist
       if (!rooms[blockId]) {
         rooms[blockId] = [];
         currentCode[blockId] = '';
-        questions[blockId] = []; 
+        questions[blockId] = []; // Initialize questions array for this room
         console.log("Created new room:", blockId);
       }
       // Avoid duplicate socket entries
@@ -22,6 +24,7 @@ module.exports = function(io) {
         console.log(`Socket ${socket.id} added to room ${blockId}`);
       }
 
+      // Determine the user's role
       const role = rooms[blockId].length === 1 ? 'mentor' : 'student';
 
       socket.data = {
@@ -30,10 +33,10 @@ module.exports = function(io) {
       };
       socket.join(blockId);
 
-      // Notify the client of their role
       socket.emit('role', role);
       console.log(`User ${socket.id} joined room ${blockId} as ${role}`);
 
+      // Send the current code in the room to the newly joined user
       socket.emit('codeUpdate', currentCode[blockId]);
       const studentCount = rooms[blockId].length - 1;
       io.to(blockId).emit('studentCount', studentCount);
@@ -49,7 +52,6 @@ module.exports = function(io) {
         }
       });
 
-      // Handle user leave room
       socket.on('leaveRoom', () => {
         const { blockId, role } = socket.data;
         if (!rooms[blockId]) return;
@@ -61,7 +63,7 @@ module.exports = function(io) {
           io.to(blockId).emit('mentorLeft');
           delete rooms[blockId];
           delete currentCode[blockId];
-          delete questions[blockId]; 
+          delete questions[blockId]; // Delete questions when the mentor leaves
           console.log(`Mentor (${socket.id}) left. Room ${blockId} closed.`);
           return;
         }
@@ -73,21 +75,20 @@ module.exports = function(io) {
         if (rooms[blockId].length === 0) {
           delete rooms[blockId];
           delete currentCode[blockId];
-          delete questions[blockId]; 
+          delete questions[blockId]; // Clean up if the room is empty
           console.log(`Room ${blockId} is empty. Deleted.`);
         }
       });
 
-      // Handle user disconnection
       socket.on('disconnect', () => {
         const { blockId, role } = socket.data;
         if (!rooms[blockId]) return;
 
         console.log(`${socket.id} disconnected from ${blockId} (${role})`);
 
+        // Remove the user from the room
         rooms[blockId] = rooms[blockId].filter(id => id !== socket.id);
 
-        // If the mentor left, close the room and notify others
         if (role === 'mentor') {
           io.to(blockId).emit('mentorLeft');
           delete rooms[blockId];
@@ -96,11 +97,10 @@ module.exports = function(io) {
           console.log(`Mentor (${socket.id}) left. Room ${blockId} closed.`);
           return;
         }
-
         if (rooms[blockId].length === 0) {
           delete rooms[blockId];
           delete currentCode[blockId];
-          delete questions[blockId]; 
+          delete questions[blockId]; // Clean up if the room is empty
           console.log(`Room ${blockId} is empty. Deleted.`);
         } else {
           const updatedCount = rooms[blockId].length - 1;
@@ -118,6 +118,7 @@ module.exports = function(io) {
         timestamp: new Date()
       };
 
+      // Save the message to the database
       const messageToSave = new Message({
         blockId,
         senderName,
@@ -127,6 +128,7 @@ module.exports = function(io) {
 
       messageToSave.save()
         .then(() => {
+          // Emit the message to all users in the room
           io.to(blockId).emit('newMessage', newMessage);
           console.log(`New message added to block ${blockId}:`, newMessage);
         })

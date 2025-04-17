@@ -39,7 +39,7 @@ export default function CodeBlockPage() {
       navigate('/');
     });
 
-    fetch(`https://localhost:5000/api/codeBlock/${id}`)
+    fetch(`http://localhost:5000/api/codeBlock/${id}`)
       .then(res => res.json())
       .then(data => setBlockData(data));
 
