@@ -9,7 +9,7 @@ const app = express();
 const server = http.createServer(app);
 const io = require("socket.io")(server, {
   cors: {
-    origin: "http://localhost:3000", 
+    origin: "*", 
     methods: ["GET", "POST"]
   }
 });
@@ -21,7 +21,6 @@ app.use(express.json());
 app.use("/api/codeBlock", require("./routes/codeBlock"));
 app.use('/api/message', require('./routes/message'));  
 
-// default
 app.get("/", (req, res) => {
   res.send("Welcome to the API!");
 });
