@@ -39,7 +39,7 @@ export default function CodeBlockPage() {
       navigate('/');
     });
 
-    fetch(`http://localhost:5000/api/codeBlock/${id}`)
+    fetch(`https://codepage-2.onrender.com/api/codeBlock/${id}`)
       .then(res => res.json())
       .then(data => setBlockData(data));
 
