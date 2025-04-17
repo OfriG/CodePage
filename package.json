@@ -5,9 +5,8 @@
   "scripts": {
     "predeploy": "npm run build",  
     "deploy": "gh-pages -d build",
-    "dev": "concurrently \"npm start --prefix client\" \"npm start --prefix server\"", 
-    "start": "npm run start --prefix server",
-    "build": "react-scripts build", 
+    "dev": "concurrently \"npm run start --prefix client\" \"npm run start --prefix server\"",
+    "start": "npm run start --prefix server", 
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -34,7 +33,7 @@
     ]
   },
   "dependencies": {
-    "react-scripts": "^5.0.1",
+    "react-scripts": "^5.0.1", 
     "sweetalert2": "^11.19.1"
   }
 }
