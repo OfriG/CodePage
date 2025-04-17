@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/CodePage/static/css/main.48db7b10.css",
+    "main.js": "/CodePage/static/js/main.6c3b76cc.js",
+    "static/js/453.419a5d54.chunk.js": "/CodePage/static/js/453.419a5d54.chunk.js",
+    "index.html": "/CodePage/index.html",
+    "main.48db7b10.css.map": "/CodePage/static/css/main.48db7b10.css.map",
+    "main.6c3b76cc.js.map": "/CodePage/static/js/main.6c3b76cc.js.map",
+    "453.419a5d54.chunk.js.map": "/CodePage/static/js/453.419a5d54.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.48db7b10.css",
+    "static/js/main.6c3b76cc.js"
+  ]
+}
