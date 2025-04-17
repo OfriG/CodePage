@@ -8,7 +8,7 @@ export default function Lobby({ userId}) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch('https://codepage-2.onrender.com/api/codeBlock')
+    fetch('https://localhost:5000/api/codeBlock')
       .then(res => res.json())
       .then(setBlocks)
       .catch(err => console.error(err));

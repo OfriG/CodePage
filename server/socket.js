@@ -7,15 +7,13 @@ module.exports = function(io) {
   io.on("connection", (socket) => {
     console.log("User connected:", socket.id);
 
-    // A user wants to join a specific room
     socket.on("joinRoom", ({ blockId }) => {
       console.log("joinRoom received with blockId:", blockId);
 
-      // Create a new room and initial code if it doesn't exist
       if (!rooms[blockId]) {
         rooms[blockId] = [];
         currentCode[blockId] = '';
-        questions[blockId] = []; // Initialize questions array for this room
+        questions[blockId] = []; 
         console.log("Created new room:", blockId);
       }
       // Avoid duplicate socket entries
@@ -24,10 +22,8 @@ module.exports = function(io) {
         console.log(`Socket ${socket.id} added to room ${blockId}`);
       }
 
-      // Determine the user's role
       const role = rooms[blockId].length === 1 ? 'mentor' : 'student';
 
-      // Save data on the socket object
       socket.data = {
         role,
         blockId
@@ -38,17 +34,12 @@ module.exports = function(io) {
       socket.emit('role', role);
       console.log(`User ${socket.id} joined room ${blockId} as ${role}`);
 
-      // Send the current code in the room to the newly joined user
       socket.emit('codeUpdate', currentCode[blockId]);
-
-      // Send the updated number of students (excluding mentor)
       const studentCount = rooms[blockId].length - 1;
       io.to(blockId).emit('studentCount', studentCount);
 
-      // Send all questions in the room to the newly joined user
       socket.emit('allQuestions', questions[blockId]);
 
-      // Real-time code synchronization
       socket.on('codeUpdate', (newCode) => {
         const { blockId } = socket.data;
         if (blockId) {
@@ -70,7 +61,7 @@ module.exports = function(io) {
           io.to(blockId).emit('mentorLeft');
           delete rooms[blockId];
           delete currentCode[blockId];
-          delete questions[blockId]; // Delete questions when the mentor leaves
+          delete questions[blockId]; 
           console.log(`Mentor (${socket.id}) left. Room ${blockId} closed.`);
           return;
         }
@@ -82,7 +73,7 @@ module.exports = function(io) {
         if (rooms[blockId].length === 0) {
           delete rooms[blockId];
           delete currentCode[blockId];
-          delete questions[blockId]; // Clean up if the room is empty
+          delete questions[blockId]; 
           console.log(`Room ${blockId} is empty. Deleted.`);
         }
       });
@@ -94,7 +85,6 @@ module.exports = function(io) {
 
         console.log(`${socket.id} disconnected from ${blockId} (${role})`);
 
-        // Remove the user from the room
         rooms[blockId] = rooms[blockId].filter(id => id !== socket.id);
 
         // If the mentor left, close the room and notify others
@@ -107,11 +97,10 @@ module.exports = function(io) {
           return;
         }
 
-        // If students remain, update the count
         if (rooms[blockId].length === 0) {
           delete rooms[blockId];
           delete currentCode[blockId];
-          delete questions[blockId]; // Clean up if the room is empty
+          delete questions[blockId]; 
           console.log(`Room ${blockId} is empty. Deleted.`);
         } else {
           const updatedCount = rooms[blockId].length - 1;
@@ -121,7 +110,6 @@ module.exports = function(io) {
       });
 
     });
-    // When a new message is sent
     socket.on('sendMessage', ({ blockId, senderName, senderRole, message }) => {
       const newMessage = {
         senderName,
@@ -130,7 +118,6 @@ module.exports = function(io) {
         timestamp: new Date()
       };
 
-      // Save the message to the database
       const messageToSave = new Message({
         blockId,
         senderName,
@@ -140,7 +127,6 @@ module.exports = function(io) {
 
       messageToSave.save()
         .then(() => {
-          // Emit the message to all users in the room
           io.to(blockId).emit('newMessage', newMessage);
           console.log(`New message added to block ${blockId}:`, newMessage);
         })
