@@ -6,6 +6,7 @@ import CodeBlockHeader from './components/CodeBlockHeader';
 import CodeEditor from './components/CodeEditor';
 import QuestionsAndCommentsSection from './components/QuestionsAndCommentsSection';
 import Chat from './chat'; 
+import {API} from '../config'
 
 export default function CodeBlockPage() {
   const { id } = useParams();
@@ -39,7 +40,7 @@ export default function CodeBlockPage() {
       navigate('/');
     });
 
-    fetch(`http://localhost:5000/api/codeBlock/${id}`)
+    fetch(API+`/api/codeBlock/${id}`)
       .then(res => res.json())
       .then(data => setBlockData(data));
 

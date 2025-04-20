@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
+import {API} from '../config'
 import './style.css';
 
 export default function Lobby({ userId}) {
@@ -8,7 +8,7 @@ export default function Lobby({ userId}) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/codeBlock')
+    fetch(API +'api/codeBlock')
       .then(res => res.json())
       .then(setBlocks)
       .catch(err => console.error(err));
